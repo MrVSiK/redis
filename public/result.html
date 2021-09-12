@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:;base64,=">
+    <title>Search Country</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: black;
+        color: white;
+        font-family: 'Roboto', sans-serif;
+      }
+      #search{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 10rem;
+      }
+      input{
+        width: 15rem;
+        height: 2rem;
+        margin: 1rem;
+        font-size: 1.5rem;
+      }
+      input:focus{
+        outline: none;
+      }
+      #btn{
+        height: 2.5rem;
+        width: 10rem;
+        font-size: 1.5rem;
+      }
+      #head {
+        height: 10rem;
+        font-size: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      #head p {
+        margin-right: 2rem;
+      }
+      #data {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      table {
+        color: black;
+        width: 80%;
+      }
+      thead {
+        background-color: white;
+        border-radius: 10px;
+        border: 2px solid blue;
+      }
+      th {
+        font-size: 2rem;
+        margin: 1rem;
+      }
+      td {
+        font-size: 1.5rem;
+        margin: 1rem;
+        text-align: center;
+      }
+      tr{
+          background-color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <section id="search">
+      <input type="text" name="country" id="country">
+      <button id="btn">Search</button>
+    </section>
+    <section id="container">
+      <div id="head">
+        <p>Time Taken:</p>
+        <p id="time"></p>
+      </div>
+      <div id="data">
+        <table id="table">
+          <thead>
+            <th>Name</th>
+            <th>Population</th>
+            <th>Flag</th>
+          </thead>
+          <tbody id="body">
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <script>
+      // Intialising DOM elements
+      const btn = document.getElementById("btn");
+      const bar = document.getElementById("country");
+      const body = document.getElementById("body");
+      const time = document.getElementById("time");
+
+
+      // Waits for a click by user on the button 
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        body.innerHTML = ""; // Resets table HTML 
+        const time1 = new Date().getTime();
+        fetch(`/${bar.value}`).then(data => data.json()).then(data => { // Fetches data from local server hosted at port 3000
+          const time2 = new Date().getTime();
+          time.innerText = `${time2 - time1} ms`;
+          const arr = data.data;
+
+          // Creates a new row and adds it to the table element for every single entry in the response array
+          for(let i = 0; i<arr.length; i++){
+            const tr = document.createElement("tr");
+            const name = document.createElement("td");
+            name.innerText = `${arr[i].name}`;
+            const population = document.createElement("td");
+            population.innerText = `${arr[i].population}`;
+            const image = document.createElement("td");
+            const src = document.createElement("img");
+            src.src = arr[i].flag;
+            src.alt = `Flag of ${arr[i].name}`;
+            src.height = 150;
+            src.width = 300;
+            image.appendChild(src);
+            tr.appendChild(name);
+            tr.appendChild(population);
+            tr.appendChild(image);
+            body.appendChild(tr);
+          };
+        }).finally(() => { // Search bar value reset
+          bar.value = ""
+        })
+      })
+    </script>
+  </body>
+</html>
